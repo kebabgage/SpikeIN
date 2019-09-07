@@ -7,7 +7,7 @@ SpikeN was initially developed to benchmark pathogen detection methods within me
 ## Options 
 
 ```
-  -h [--help]		Display help message"
+  	-h [--help]		Display help message"
 	-i [--isolate]		Isolate to be spiked-in." 
 					              Must be in gzipped fastq format"
 	-m [--metagenome]	Metagenome that will be spiked with isolate." 
