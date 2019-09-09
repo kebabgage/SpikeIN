@@ -1,1 +1,20 @@
+## Notekeeping for Project: SpikeN 
+##
 
+## Metagenome samples 
+ENV0619_1.clean.fastq.gz  
+ENV0619_2.clean.fastq.gz  
+ENV0619_3.clean.fastq.gz
+
+## Isolate samples 
+SS19M2901.clean.fastq.gz
+
+## Kraken2 
+https://github.com/DerrickWood/kraken2
+
+kraken2 --threads 4 --db $KRAKENDB --report ${REPORT_FILE_KRAKEN} IN_FILE_KRAKEN
+ > OUT_FILE_KRAKEN
+ 
+ 
+ 
+## MetaBAT 
