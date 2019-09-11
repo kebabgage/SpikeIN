@@ -81,6 +81,7 @@ if [REPORT_OUTPUT != 0]; then
 	zcat copy.fastq.gz | head -n 1 - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT}
 	zcat copy.farawersfstq.gz | sed '1d' - | awk  'NR % 4 == 0' - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT} 
 
+fi
 source activate nanopore
 
 # Append isolate subsample to metagenome
