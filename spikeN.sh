@@ -12,10 +12,14 @@ usage() {
 	echo "					Must be in gzipped fastq format"
 	echo "	-o [--output]		Base file name for gzipped output"
 	echo "	-p [--percentage]	Percentage of isolate reads to be spiked in"
-	echo "	-s [--seed]		Random seed for shuffling metagenome following"
-	echo "					spike-in"
+	echo "	-s [--seed]		Seed for shuffling metagenome following spike-in"
+	echo "					[Randomly generated if not specified ]"
 					
 }
+
+# If seed is entered as an option, this will be overwritten with specified seed 
+sampleSeed=$((1 + RANDOM % 100))
+REPORT_OUTPUT=0
 while [ "$1" != "" ]; do
 	case $1 in
 		-i | --isolate)		shift
@@ -38,6 +42,9 @@ while [ "$1" != "" ]; do
 					;;
 		-t | --temp)		shift 
 					TEMP_DIR=$1
+					;;
+		-r | --report)		shift
+					REPORT_OUTPUT=$1
 					;;
 		-*)			echo "Error: Unkown options: $1"
 					usage
@@ -63,6 +70,16 @@ conda deactivate
 source activate beatson_py3
 seqtk sample -s $sampleSeed $isolate $isolateFraction | gzip > ${TEMP_DIR}/subSampleIsolate.fq.gz 
 conda deactivate
+if [REPORT_OUTPUT != 0]; then
+
+	echo "### SpikeN Report" >> ${TEMP_DIR}/${REPORT_OUTPUT}
+	echo "" >> ${TEMP_DIR}/${REPORT_OUTPUT}
+	echo "Total Reads spiked in: " $isolateFraction
+	echo "Seed: " $sampleSeed
+	echo ""
+	echo "Read Ids: "
+	zcat copy.fastq.gz | head -n 1 - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT}
+	zcat copy.farawersfstq.gz | sed '1d' - | awk  'NR % 4 == 0' - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT} 
 
 source activate nanopore
 
@@ -70,8 +87,8 @@ source activate nanopore
 zcat $metagenome ${TEMP_DIR}/subSampleIsolate.fq.gz | gzip > ${TEMP_DIR}/metaAppendIsolate.fq.gz
 
 # Shuffle metagenome | gzip 
-seqkit shuffle ${TEMP_DIR}/metaAppendIsolate.fq.gz | gzip > $output.gz
+seqkit shuffle ${TEMP_DIR}/metaAppendIsolate.fq.gz | gzip > ${TEMP_DIR}/${output}.fq.gz
 conda deactivate 
-#rm subSampleIsolate.fq.gz
+rm ${TEMP_DIR}/subSampleIsolate.fq.gz
 rm ${TEMP_DIR}/metaAppendIsolate.fq.gz
 echo "Spike-in complete"
