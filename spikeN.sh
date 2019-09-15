@@ -19,7 +19,7 @@ usage() {
 
 # If seed is entered as an option, this will be overwritten with specified seed 
 sampleSeed=$((1 + RANDOM % 100))
-REPORT_OUTPUT=0
+REPORT_OUTPUT=""
 while [ "$1" != "" ]; do
 	case $1 in
 		-i | --isolate)		shift
@@ -57,7 +57,7 @@ while [ "$1" != "" ]; do
 done
 source activate nanopore
 
-mkdir ${TEMP_DIR}
+mkdir -p ${TEMP_DIR}
 
 # Count the amount of reads in the isolate 
 isolateCount=$(echo "$(zcat $isolate| wc -l)/4" | bc)
@@ -70,16 +70,18 @@ conda deactivate
 source activate beatson_py3
 seqtk sample -s $sampleSeed $isolate $isolateFraction | gzip > ${TEMP_DIR}/subSampleIsolate.fq.gz 
 conda deactivate
-if [REPORT_OUTPUT != 0]; then
+if [ "$REPORT_OUTPUT" != "" ]; then
 
 	echo "### SpikeN Report" >> ${TEMP_DIR}/${REPORT_OUTPUT}
-	echo "" >> ${TEMP_DIR}/${REPORT_OUTPUT}
-	echo "Total Reads spiked in: " $isolateFraction
-	echo "Seed: " $sampleSeed
-	echo ""
-	echo "Read Ids: "
-	zcat copy.fastq.gz | head -n 1 - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT}
-	zcat copy.farawersfstq.gz | sed '1d' - | awk  'NR % 4 == 0' - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT} 
+	echo "" >> ${TEMP_DIR}/${REPORT_OUTPUT} >> ${TEMP_DIR}/${REPORT_OUTPUT} 
+	echo "Isolate file spiked:" $isolate >> ${TEMP_DIR}/${REPORT_OUTPUT}   
+	echo "Metagenome file spiked: " $metagenome >> ${TEMP_DIR}/${REPORT_OUTPUT}   
+	echo "Total Reads spiked in: " $isolateFraction >> ${TEMP_DIR}/${REPORT_OUTPUT} 
+	echo "Seed: " $sampleSeed >> ${TEMP_DIR}/${REPORT_OUTPUT} 
+	echo "" >> ${TEMP_DIR}/${REPORT_OUTPUT} 
+	echo "Read Ids: " >> ${TEMP_DIR}/${REPORT_OUTPUT} 
+	zcat ${TEMP_DIR}/subSampleIsolate.fq.gz | head -n 1 - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT}
+	zcat ${TEMP_DIR}/subSampleIsolate.fq.gz | sed '1d' - | awk  'NR % 4 == 0' - | cut -d " " -f1 >> ${TEMP_DIR}/${REPORT_OUTPUT} 
 
 fi
 source activate nanopore
