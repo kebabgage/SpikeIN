@@ -9,14 +9,17 @@ SpikeN was initially developed to benchmark pathogen detection methods within me
 ```
   	-h [--help]		Display help message
 	-i [--isolate]		Isolate to be spiked-in.
-					              Must be in gzipped fastq format
+					Must be in gzipped fastq format
 	-m [--metagenome]	Metagenome that will be spiked with isolate. 
-					              Must be in gzipped fastq format
+					Must be in gzipped fastq format
 	-o [--output]		Base file name for gzipped output
 	-p [--percentage]	Percentage of isolate reads to be spiked in
 	-s [--seed]		Random seed for shuffling metagenome following
-	        				      spike-in
-	-r [--report]
+	        			spike-in
+	-r [--report]		Output file name for report that contains read headers,
+					shuffling-seed and subsample seed, 
+					filenames of isolate and metagenome files. 
+					
 ```
 
 ## Usage 
